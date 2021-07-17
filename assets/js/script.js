@@ -84,7 +84,7 @@ var completeEditTask = function(taskName, taskType, taskId) {
         
       };
 
-
+      saveTasks();
 
       alert("Task Updated!");
 
@@ -120,13 +120,13 @@ var createTaskEl = function(taskDataObj) {
       // method adds any content between the parentheses to the end of the specified array
       tasks.push(taskDataObj);
 
+      saveTasks();
 
       // increase task counter for next unique id. This way, the id of the newly created DOM element gets added to the task's object as well. 
       // We can use that id later to identify which task has changed for both the DOM and the tasks array.
       taskIdCounter++;
 
-      console.log(taskDataObj);
-      console.log(taskDataObj.status);
+     
 };
 
 
@@ -224,9 +224,11 @@ var deleteTask = function(taskId) {
       }
     }
 
-// reassign tasks array to be the same as updatedTaskArr
-tasks = updatedTaskArr;
-}
+    // reassign tasks array to be the same as updatedTaskArr
+    tasks = updatedTaskArr;
+
+    saveTasks();
+};
 
 var editTask = function(taskId) {
       // console.log("editing task #" + taskId);
@@ -248,7 +250,7 @@ var editTask = function(taskId) {
     // add following code to include tasks id
     formEl.setAttribute("data-task-id", taskId);
 
-}
+};
 
 var taskStatusChangeHandler = function(event) {
     // get the task item's id
@@ -277,10 +279,42 @@ var taskStatusChangeHandler = function(event) {
       }  
     };
     
-   
+    saveTasks();
 };
+
+var saveTasks = function() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+var loadTasks = function(){
+    
+  var  savedTasks = localStorage.getItem("tasks");
+    
+    if (!savedTasks) {
+      tasks = [];
+    } 
+    
+    
+  savedTasks = JSON.parse(savedTasks);
+
+  
+
+  // loop through savedTasks array
+  for (var i = 0; i < savedTasks.length; i++) {
+    // pass each task object into the `createTaskEl()` function
+    createTaskEl(savedTasks[i]);
+  }
+    console.log(savedTasks[i])  
+}
+
+
+ 
+
 
 //taskButtonHandler(), which listens to events on the entire <main> element
 pageContentEl.addEventListener("click", taskButtonHandler)
 
 pageContentEl.addEventListener("change", taskStatusChangeHandler);
+
+
+loadTasks();
